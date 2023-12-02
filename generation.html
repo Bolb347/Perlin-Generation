@@ -9,14 +9,14 @@
       for (var y = 0; y < 100; y ++) {
         var biome;
         let zoom = 10
-        if (noise(x/zoom, y/zoom) < 0.4) {
-          biome = 'plains';
-        } else if (noise(x/zoom, y/zoom) < 0.6) {
-          biome = 'forest';
-        } else if (noise(x/zoom, y/zoom) < 0.8) {
-          biome = 'mountains';
-        } else if (noise(x/zoom, y/zoom) <= 1) {
+        if (noise(x/zoom, y/zoom) < 0.3) {
           biome = 'ocean';
+        } else if (noise(x/zoom, y/zoom) < 0.5) {
+          biome = 'plains';
+        } else if (noise(x/zoom, y/zoom) < 0.7) {
+          biome = 'forest';
+        } else if (noise(x/zoom, y/zoom) <= 1) {
+          biome = 'mountains';
         }
         pixels.push(biome);
         pixelValue.push(noise(x/zoom, y/zoom))
@@ -31,13 +31,13 @@
       for (var y = 0; y < 100; y ++) {
         let c = 0;
         if (pixels[x * 100 + y] === 'plains') {
-          c = color(100+(pixelValue[x * 100 + y]*100), 0, 0);
+          c = color(0, 255-(pixelValue[x * 100 + y]*150), 0);
         } else if (pixels[x * 100 + y] === 'forest') {
-          c = color(0, 100+(pixelValue[x * 100 + y]*100), 0);
+          c = color(0, 255-(pixelValue[x * 100 + y]*200), 0);
         } else if (pixels[x * 100 + y] === 'mountains') {
-          c = color(0, 0, 100+(pixelValue[x * 100 + y]*100));
+          c = color(255-(pixelValue[x * 100 + y]*200), 255-(pixelValue[x * 100 + y]*200), 255-(pixelValue[x * 100 + y]*200));
         } else if (pixels[x * 100 + y] === 'ocean') {
-          c = color(100+(pixelValue[x * 100 + y]*100), 100+(pixelValue[x * 100 + y]*100), 100+(pixelValue[x * 100 + y]*100));
+          c = color(0, 0, 255-(pixelValue[x * 100 + y]*200));
         }
         fill(c);
         noStroke();
