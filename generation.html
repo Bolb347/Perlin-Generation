@@ -13,6 +13,9 @@
           biome = 'ocean';
         } else if (noise(x/zoom, y/zoom) < 0.5) {
           biome = 'plains';
+          if (Math.random() < 0.001) {
+            biome = 'village';
+          }
         } else if (noise(x/zoom, y/zoom) < 0.7) {
           biome = 'forest';
         } else if (noise(x/zoom, y/zoom) <= 1) {
@@ -38,6 +41,8 @@
           c = color(255-(pixelValue[x * 100 + y]*200), 255-(pixelValue[x * 100 + y]*200), 255-(pixelValue[x * 100 + y]*200));
         } else if (pixels[x * 100 + y] === 'ocean') {
           c = color(0, 0, 255-(pixelValue[x * 100 + y]*200));
+        } else if (pixels[x * 100 + y] === 'village') {
+          c = color(150, 75, 0);
         }
         fill(c);
         noStroke();
