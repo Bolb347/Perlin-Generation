@@ -1,0 +1,95 @@
+<!-- Use the generation without 3d for testing for new generation (this one is a lot slower)-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+<script>
+  let camx = 0;
+  let camy = -100;
+  let camz = 0;
+  let waterLevel = -16;
+
+  let pixels = [];
+  let pixelValue = [];
+  function setup() {
+    createCanvas(400, 400, WEBGL);
+    for (var x = 0; x < 100; x ++) {
+      for (var y = 0; y < 100; y ++) {
+        var biome;
+        let zoom = 10
+        if (noise(x/zoom, y/zoom) < 0.3) {
+          biome = 'ocean';
+        } else if (noise(x/zoom, y/zoom) < 0.5) {
+          biome = 'plains';
+          if (Math.random() < 0.001) {
+            biome = 'village';
+          }
+        } else if (noise(x/zoom, y/zoom) < 0.7) {
+          biome = 'forest';
+        } else if (noise(x/zoom, y/zoom) <= 1) {
+          biome = 'mountains';
+        }
+        pixels.push(biome);
+        pixelValue.push(noise(x/zoom, y/zoom))
+      }
+    }
+  }
+
+  function draw() {
+    background(220);
+
+    camera(camx, camy, camz, 200, 0, 200)
+    
+    orbitControl();
+  
+    for (var x = 0; x < 100; x ++) {
+      for (var y = 0; y < 100; y ++) {
+        let c = 0;
+        if (pixels[x * 100 + y] === 'plains') {
+          c = color(0, 255-(pixelValue[x * 100 + y]*150), 0);
+        } else if (pixels[x * 100 + y] === 'forest') {
+          c = color(0, 255-(pixelValue[x * 100 + y]*200), 0);
+        } else if (pixels[x * 100 + y] === 'mountains') {
+          c = color(255-(pixelValue[x * 100 + y]*200), 255-(pixelValue[x * 100 + y]*200), 255-(pixelValue[x * 100 + y]*200));
+        } else if (pixels[x * 100 + y] === 'ocean') {
+          c = color(0, 0, 255-(pixelValue[x * 100 + y]*200));
+        } else if (pixels[x * 100 + y] === 'village') {
+          c = color(150, 75, 0);
+        }
+        if (pixels[x * 100 + y] === 'ocean') {
+          push();
+          fill(c);
+          noStroke();
+          translate(x*4, waterLevel, y*4);
+          box(4, 4, 4);
+          pop();
+        } else if (pixels[x * 100 + y] === 'village') {
+          push();
+          fill(c);
+          noStroke();
+          translate(x*4, 0 - pixelValue[x * 100 + y]*50 - 4, y*4);
+          box(4, 4, 4);
+          pop();
+        } else {
+          push();
+          fill(c);
+          noStroke();
+          translate(x*4, 0 - pixelValue[x * 100 + y]*50, y*4);
+          box(4, 4, 4);
+          pop();
+        }
+      }
+    }
+  }
+  
+  function keyPressed() {
+    if (keyCode === LEFT_ARROW) {
+      camx = camx + 2;
+    } else if (keyCode === RIGHT_ARROW) {
+      camx = camx - 2;
+    } else if (keyCode === UP_ARROW) {
+      camz = camz + 2;
+    } else if (keyCode === DOWN_ARROW) {
+      camz = camz - 2;
+    }
+  }
+</script>
