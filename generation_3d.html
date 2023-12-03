@@ -36,6 +36,8 @@
 
   function draw() {
     background(220);
+    
+    keyPressed();
 
     camera(camx, camy, camz, 200, 0, 200)
     
@@ -82,14 +84,18 @@
   }
   
   function keyPressed() {
-    if (keyCode === LEFT_ARROW) {
+    if (keyCode === LEFT_ARROW && keyIsPressed) {
       camx = camx + 2;
-    } else if (keyCode === RIGHT_ARROW) {
+    } else if (keyCode === RIGHT_ARROW && keyIsPressed) {
       camx = camx - 2;
-    } else if (keyCode === UP_ARROW) {
+    } else if (keyCode === UP_ARROW && keyIsPressed) {
       camz = camz + 2;
-    } else if (keyCode === DOWN_ARROW) {
+    } else if (keyCode === DOWN_ARROW && keyIsPressed) {
       camz = camz - 2;
+    } else if (key === 'w' && keyIsPressed) {
+      camy = camy - 2;
+    } else if (key === 's' && keyIsPressed) {
+      camy = camy + 2;
     }
   }
 </script>
