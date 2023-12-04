@@ -36,10 +36,19 @@
           c = color(255-(noise(x/zoom, y/zoom)*200), 255-(noise(x/zoom, y/zoom)*200), 255-(noise(x/zoom, y/zoom)*200));
         } else if (biome === 'ocean') {
           c = color(0, 0, 255-(noise(x/zoom, y/zoom)*200));
-        } else if (biome === 'village') {
-          c = color(150, 75, 0);
         }
-        pixels.push([biome, x, y, noise(x/zoom, y/zoom), c]);
+        if (biome === 'village') {
+          pixels.push([biome, x, y, noise(x/zoom, y/zoom), color(0, 255-(noise(x/zoom, y/zoom)*150), 0), 'yes']);
+        } else {
+          pixels.push([biome, x, y, noise(x/zoom, y/zoom), c, 'no']);
+        }
+      }
+    }
+    for (var xvill = 0; xvill < 100; xvill ++) {
+      for (var yvill = 0; yvill < 100; yvill ++) {
+        if (pixels[xvill * 100 + yvill][0] === 'village') {
+          generateVillage(5, xvill, yvill);
+        }
       }
     }
   }
@@ -58,7 +67,6 @@
       for (var y = 0; y < 100; y ++) {
         strokeWeight(0.1);
         stroke(0);
-        //stroke(lerpColor(pixels[x * 100 + y][4], pixels[x * 100 + y + 100][4], 1));
         if (pixels[x * 100 + y][0] === 'village') {
           fill(color(150, 75, 0));
           translate(x*4, 0-pixels[x * 100 + y][3]*50, y*4);
@@ -66,7 +74,11 @@
           fill(pixels[x * 100 + y + 100][4]);
           translate(-(x*4), pixels[x * 100 + y][3]*50, -(y*4))
         } else {
+          if (pixels[x * 100 + y][0] === 'path') {
+            fill(pixels[x * 100 + y][4])
+          } else {
           fill(lerpColor(pixels[x * 100 + y][4], pixels[x * 100 + y + 100][4], 1));
+          }
         }
         vertex(x*4, 0-pixels[x * 100 + y][3]*50, y*4);
         vertex(x*4+4, 0-pixels[x * 100 + y + 100][3]*50, y*4);
@@ -88,6 +100,45 @@
       camy = camy - 8;
     } else if (key === 's' && keyIsPressed) {
       camy = camy + 8;
+    }
+  }
+  function generateVillage(houses, housex, housey) {
+    if (pixels[housex * 100 + housey][5] === 'yes') {
+      var rand;
+      for (var h = 0; h < houses; h ++) {
+        rand = random(0, 4);
+        if (rand <= 1 && housex <= 98) {
+          if (pixels[housex * 100 + housey + 100][0] === 'plains') {
+            pixels[housex * 100 + housey + 100][0] = 'path'
+            pixels[housex * 100 + housey + 100][4] = color(100, 50, 0)
+            housex += 2;
+          }
+        } else if (rand <= 2 && housey <= 98) {
+          if (pixels[housex * 100 + housey + 1][0] === 'plains') {
+            pixels[housex * 100 + housey + 1][0] = 'path'
+            pixels[housex * 100 + housey + 1][4] = color(100, 50, 0)
+            housey += 2;
+          }
+        } else if (rand <= 3 && housex >= 2) {
+          if (pixels[housex * 100 + housey - 100][0] === 'plains') {
+            pixels[housex * 100 + housey - 100][0] = 'path'
+            pixels[housex * 100 + housey - 100][4] = color(100, 50, 0)
+            housex -= 2;
+          }
+        } else if (rand <= 4 && housey >= 2) {
+          if (pixels[housex * 100 + housey - 1][0] === 'plains') {
+            pixels[housex * 100 + housey - 1][0] = 'path'
+            pixels[housex * 100 + housey - 1][4] = color(100, 50, 0)
+            housey -= 2;
+          }
+        }
+        if (housex < 100) {
+          if (pixels[housex * 100 + housey][0] === 'plains') {
+            pixels[housex * 100 + housey][0] = 'village';
+            pixels[housex * 100 + housey][5] = 'no;'
+          }
+        }
+      }
     }
   }
 </script>
