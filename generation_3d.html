@@ -55,7 +55,10 @@
 
   function draw() {
     background(220);
-    
+        
+    keyPressed();
+
+    camera(camx, camy, camz, 200, 0, 200);
     
     fill(50, 50, 150);
     beginShape();
@@ -64,10 +67,6 @@
     vertex(400, waterLevel, 400);
     vertex(0, waterLevel, 400);
     endShape();
-        
-    keyPressed();
-
-    camera(camx, camy, camz, 200, 0, 200);
     
     orbitControl();
   
