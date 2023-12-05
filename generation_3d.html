@@ -11,6 +11,8 @@
   let pixels = [];
   function setup() {
     createCanvas(400, 400, WEBGL);
+    strokeWeight(0.1);
+    stroke(0);
     for (var x = 0; x < 100; x ++) {
       for (var y = 0; y < 100; y ++) {
         var biome;
@@ -73,24 +75,27 @@
     for (var x = 0; x < 99; x ++) {
       beginShape(TRIANGLE_STRIP);
       for (var y = 0; y < 100; y ++) {
-        strokeWeight(0.1);
-        stroke(0);
-        if (pixels[x * 100 + y][0] === 'village') {
-          push();
-          fill(color(150, 75, 0));
-          translate(x*4, 0-pixels[x * 100 + y][3]*50, y*4);
-          box(4, 4, 4);
-          fill(pixels[x * 100 + y + 100][4]);
-          pop();
-        } else {
-          if (pixels[x * 100 + y][0] === 'path') {
-            fill(pixels[x * 100 + y][4])
-          } else {
-          fill(lerpColor(pixels[x * 100 + y][4], pixels[x * 100 + y + 100][4], 1));
-          }
+        var item = pixels[x * 100 + y];
+        switch (item[0]) {
+          case 'village':
+            push();
+            fill(150, 75, 0);
+            translate(x*4, -item[3]*50, y*4);
+            box(4, 4, 4);
+            fill(pixels[x * 100 + y + 100][4]);
+            pop();
+            break;
+
+          case 'path':
+            fill(item[4])
+            break;
+
+          default:
+            fill(lerpColor(item[4], pixels[x * 100 + y + 100][4], 1));
+            break;
         }
-        vertex(x*4, 0-pixels[x * 100 + y][3]*50, y*4);
-        vertex(x*4+4, 0-pixels[x * 100 + y + 100][3]*50, y*4);
+        vertex(x*4, -item[3]*50, y*4);
+        vertex(x*4+4, -pixels[x * 100 + y + 100][3]*50, y*4);
       }
       endShape();
     }
