@@ -3,14 +3,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 
 <script>
-  let camx = 0;
-  let camy = -100;
-  let camz = 0;
+  let camx = 50;
+  let camz = 50;
   let waterLevel = -16;
-
+  
   let pixels = [];
+  let cam;
+  let deltaTilt = 0;
+  let deltaPan = 0;
   function setup() {
     createCanvas(400, 400, WEBGL);
+    cam = createCamera();
     noStroke();
     for (var x = 0; x < 100; x ++) {
       for (var y = 0; y < 100; y ++) {
@@ -28,20 +31,25 @@
         } else if (noise(x/zoom, y/zoom) <= 1) {
           biome = 'mountains';
         }
-        let c = 0;
-        if (biome === 'plains') {
-          c = color(0, 255-(noise(x/zoom, y/zoom)*150), 0);
-        } else if (biome === 'forest') {
-          c = color(0, 255-(noise(x/zoom, y/zoom)*200), 0);
-        } else if (biome === 'mountains') {
-          c = color(255-(noise(x/zoom, y/zoom)*200), 255-(noise(x/zoom, y/zoom)*200), 255-(noise(x/zoom, y/zoom)*200));
-        } else if (biome === 'ocean') {
-          c = color(0, 0, 255-(noise(x/zoom, y/zoom)*200));
-        }
-        if (biome === 'village') {
-          pixels.push([biome, x, y, noise(x/zoom, y/zoom), color(0, 255-(noise(x/zoom, y/zoom)*150), 0), 'yes']);
-        } else {
-          pixels.push([biome, x, y, noise(x/zoom, y/zoom), c, 'no']);
+        switch (biome) {
+          case 'plains':
+            pixels.push([biome, x, y, noise(x/zoom, y/zoom), color(0, 255-(noise(x/zoom, y/zoom)*150), 0), 'no']);
+            
+            break;
+          case 'forest':
+            pixels.push([biome, x, y, noise(x/zoom, y/zoom), color(0, 255-(noise(x/zoom, y/zoom)*200), 0), 'no']);
+            
+            break;
+          case 'mountains':
+            pixels.push([biome, x, y, noise(x/zoom, y/zoom), color(255-(noise(x/zoom, y/zoom)*200), 255-(noise(x/zoom, y/zoom)*200), 255-(noise(x/zoom, y/zoom)*200)), 'no']);
+            
+            break;
+          case 'ocean':
+            pixels.push([biome, x, y, noise(x/zoom, y/zoom), color(0, 0, 255-(noise(x/zoom, y/zoom)*200)), 'no']);
+  
+            break;
+          case 'village':
+            pixels.push([biome, x, y, noise(x/zoom, y/zoom), color(0, 255-(noise(x/zoom, y/zoom)*150), 0), 'yes']);
         }
       }
     }
@@ -53,14 +61,15 @@
       }
     }
   }
-
+  
   function draw() {
     background(220);
-        
+    cam.setPosition(camx * 4, -Math.floor(pixels[Math.floor(camx) * 100 + Math.floor(camz)][3] * 50) - 10, camz * 4);
+  
     keyPressed();
-
-    camera(camx, camy, camz, 200, 0, 200);
-    
+  
+    perspective(1000, 1, 0.1, 8000);
+  
     fill(50, 50, 150);
     beginShape();
     vertex(0, waterLevel, 0);
@@ -68,8 +77,7 @@
     vertex(400, waterLevel, 400);
     vertex(0, waterLevel, 400);
     endShape();
-    
-    orbitControl();
+  
   
     for (var x = 0; x < 99; x ++) {
       beginShape(TRIANGLE_STRIP);
@@ -84,11 +92,11 @@
             fill(pixels[x * 100 + y + 100][4]);
             pop();
             break;
-
+  
           case 'path':
             fill(item[4])
             break;
-
+  
           default:
             fill(lerpColor(item[4], pixels[x * 100 + y + 100][4], 1));
             break;
@@ -99,20 +107,32 @@
       endShape();
     }
   }
-
+  
   function keyPressed() {
     if (keyCode === LEFT_ARROW && keyIsPressed) {
-      camx = camx + 8;
+      deltaPan += 0.1
+      cam.pan(0.1);
     } else if (keyCode === RIGHT_ARROW && keyIsPressed) {
-      camx = camx - 8;
+      deltaPan -= 0.1;
+      cam.pan(-0.1);
     } else if (keyCode === UP_ARROW && keyIsPressed) {
-      camz = camz + 8;
+      deltaTilt -= 0.1;
+      cam.tilt(-0.1);
     } else if (keyCode === DOWN_ARROW && keyIsPressed) {
-      camz = camz - 8;
-    } else if (key === 'w' && keyIsPressed) {
-      camy = camy - 8;
-    } else if (key === 's' && keyIsPressed) {
-      camy = camy + 8;
+      deltaTilt += 0.1;
+      cam.tilt(0.1);
+    } else if (key === 'w' && keyIsPressed && camz <= 97) {
+      camx -= sin(deltaPan);
+      camz -= cos(deltaPan);
+      if (camx > 99) {
+        camx = 99;
+      } if (camx < 0) {
+        camx = 0;
+      } if (camz > 99) {
+        camz = 99;
+      } if (camz < 0) {
+        camz = 0;
+      }
     }
   }
   function generateVillage(houses, housex, housey) {
