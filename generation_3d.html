@@ -121,18 +121,27 @@
     } else if (keyCode === DOWN_ARROW && keyIsPressed) {
       deltaTilt += 0.1;
       cam.tilt(0.1);
-    } else if (key === 'w' && keyIsPressed && camz <= 97) {
+    } else if (key === 'w' && keyIsPressed) {
       camx -= sin(deltaPan);
       camz -= cos(deltaPan);
-      if (camx > 99) {
+    } else if (key === 's' && keyIsPressed) {
+      camx += sin(deltaPan);
+      camz += cos(deltaPan);
+    } else if (key === 'a' && keyIsPressed) {
+      camx -= cos(deltaPan);
+      camz += sin(deltaPan);
+    } else if (key === 'd' && keyIsPressed) {
+      camx += cos(deltaPan);
+      camz -= sin(deltaPan);
+    }
+    if (camx > 99) {
         camx = 99;
-      } if (camx < 0) {
+    } if (camx < 0) {
         camx = 0;
-      } if (camz > 99) {
+    } if (camz > 99) {
         camz = 99;
-      } if (camz < 0) {
+    } if (camz < 0) {
         camz = 0;
-      }
     }
   }
   function generateVillage(houses, housex, housey) {
